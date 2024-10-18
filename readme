@@ -1,0 +1,150 @@
+
+support OS Debian 11
+
+install
+
+''''
+bash <(curl -s https://raw.githubusercontent.com/wayangkulit95/usermanager/main/install.sh)
+
+''''
+
+Admin Panel
+
+https://<ipvps:port>/login
+
+
+user access
+
+http://<ipvps:port>/id=<username>/premium/code=<code>
+
+
+Additional Notes
+Using a Domain: If you have a domain name pointing to your VPS, you can use that instead of the IP address. For example, if your domain is example.com, you can access the application via http://example.com:3000/login.
+Firewall and Security Groups: Ensure that the port is open in your firewall settings and security groups to allow incoming connections.
+
+### Change Log
+
+#### Version 1.0.0
+- **Initial Release**: Basic functionality for user management system.
+  
+#### Version 1.1.0
+- **User Management Features**:
+  - Added user authentication for the management panel.
+  - Implemented user addition with fields for username, code, expiration, allowed countries, user ID, and user code.
+  - Created an HTML interface for user management and user addition.
+
+#### Version 1.2.0
+- **Database Integration**:
+  - Set up SQLite database with a `users` table.
+  - Implemented functionality to check and display all users in the management panel.
+
+#### Version 1.3.0
+- **Telegram Notifications**:
+  - Integrated Telegram bot to send notifications.
+  - Added notifications for:
+    - New user creation.
+    - User access to content.
+
+#### Version 1.4.0
+- **Access Control Features**:
+  - Implemented checks for user expiration dates.
+  - Added device locking based on user agent to restrict access to authorized devices.
+  - Implemented notification for expired user access attempts.
+
+#### Version 1.5.0
+- **User Interface Improvements**:
+  - Enhanced HTML forms for user addition and management with better labeling.
+  - Implemented redirection for users whose access has expired.
+
+### Future Features
+- Implement user deletion functionality.
+- Add logging for management actions (e.g., user creation, deletion, updates).
+- Enhance security features (e.g., hashing passwords).
+
+### Notes
+- Ensure to keep track of any bugs or issues in a separate bug report log for better management and resolution in future updates.
+
+---
+
+Explanation of Changes:
+User Expiration Check: If the user's subscription has expired, a notification is sent to Telegram, and the user is redirected to a specified URL.
+
+Device Locking: The first device that accesses the content is locked in, and future access attempts from different devices are denied.
+
+Telegram Notifications: Notifications are sent to your Telegram bot whenever a user expires or accesses the content.
+
+Content Access URL: The script redirects to a specified content URL if access is granted.
+
+
+18 OKT 2024
+
+Key Changes:
+Browser Detection: The script checks the user-agent against common browser substrings (Mozilla, Chrome, Safari, etc.). If the user-agent matches, the script redirects the user to a browser-specific URL (browserRedirectUrl).
+Regular Flow for Non-Browsers: If the request is not from a browser, the script continues with the regular process:
+Checks the expiration date.
+Verifies allowed devices.
+Sends notifications via Telegram.
+Redirects to the content URL if all checks are valid.
+
+Key Changes:
+Browser Detection Including Mobile: I added mobile browser substrings (Android, iPhone, iPad, Opera, Samsung, Mobile Safari, CriOS, FxiOS) to the browserAgents array to detect mobile browsers as well.
+
+Unified Browser Redirect: If the user-agent matches any browser (desktop or mobile), the script redirects to a URL for browser users (browserRedirectUrl).
+
+
+
+Key Changes:
+Sniffing Tool Detection: I added a sniffingAgents array that includes common HTTP libraries and tools that are used for sniffing, such as curl, wget, Postman, python-requests, etc.
+
+Sniffing Tool Redirect: If the request comes from a tool like curl, wget, or Postman, the user will be redirected to a different URL (sniffingRedirectUrl).
+
+Logging and Notification: Any attempt by a sniffing tool will also trigger a notification to your Telegram bot, similar to other events like user expiration and access.
+
+Customize the URLs:
+Sniffing Tool Redirect: Replace 'https://your-sniffing-redirect-url.com' with the URL you want to redirect sniffing tool users to.
+Browser Redirect: Update 'https://your-browser-redirect-url.com' with the URL you want to redirect both desktop and mobile browser users.
+Expiration Redirect: Modify '' with your URL for expired users.
+Content URL: Change '' to the actual content URL.
+This enhanced script will now handle various scenarios:
+
+Sniffing tools like curl, wget, and Postman.
+Desktop and mobile browsers.
+Standard content access for valid devices.
+
+
+
+Key Updates:
+Linux Detection: A new array linuxAgents contains common user-agent strings that represent Linux environments. This checks if the request comes from a Linux-based system.
+Linux Redirect: If a Linux-based system (either browser or tool) is detected, the user is redirected to a Linux-specific URL (linuxRedirectUrl).
+Sniffing Tool Detection: The logic for sniffing tools remains the same, but now it works in combination with the Linux detection to ensure full coverage.
+Browser Detection: It still detects browsers separately (desktop or mobile) and redirects them to the browser-specific URL.
+Customize the URLs:
+Linux Redirect: Replace 'https://your-linux-redirect-url.com' with the URL you want Linux system users to be redirected to.
+Sniffing Tool Redirect: Replace 'https://your-sniffing-redirect-url.com' with the URL you want to redirect sniffing tools to.
+Browser Redirect: Change 'https://your-browser-redirect-url.com' to the appropriate URL for desktop and mobile browsers.
+With this update, the script now handles:
+
+Linux system detection (including Linux-based browsers or tools).
+Sniffing tool detection (curl, wget, etc.).
+Browser detection for both desktop and mobile browsers.
+
+Key Updates:
+Sniffing Tool Detection: If a sniffing tool is detected via the sniffingAgents, it triggers a bot notification.
+Telegram Notification for Sniffing Attempts: When a sniffing tool is detected, the script sends a notification message to a Telegram bot using sendTelegramNotification(). It includes details such as:
+Username (if available).
+User Agent (which can help identify the tool).
+IP Address of the request.
+The time of the attempt.
+Sniffing Redirect: Users detected using sniffing tools are redirected to a custom page (sniffingRedirectUrl), which can either block access, display a warning, or redirect them elsewhere.
+
+Key Updates:
+Browser Access Notification: If the request comes from a browser (as determined by browserAgents), the script sends a notification message to a Telegram bot. The message includes:
+Username (if available).
+User Agent (browser information).
+IP Address of the request.
+The time of access.
+Telegram Notification: The sendTelegramNotification() function is used to send the message. Make sure you have this function properly set up to send messages via your bot.
+How It Works:
+User Agent Detection: The script checks the User-Agent header to determine if the request is coming from a browser.
+Telegram Notification: When a browser access attempt is detected, a Telegram notification is sent to notify you.
+Redirection: You can configure a specific URL (browserRedirectUrl) where users who access via a browser are redirected.
